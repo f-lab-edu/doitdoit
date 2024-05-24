@@ -53,15 +53,39 @@
                         todoElement.innerHTML = `
                         <span class="todo-dot"></span>
                         <div class="${todo.status ? 'completed' : ''}">${todo.item} - ${new Date(todo.dueDate).toLocaleDateString()}</div>
+
                         <button class="btn-icon mx-2" onclick="modifyTodo('${todo.id}', '${todo.item}', '${todo.dueDate}', '${todo.status}')">
                             <img src="/images/modify-icon.svg" alt="Modify Icon" width="16" height="16">
                         </button>
                         <button class="btn-icon" onclick="deleteTodo('${todo.id}')">
                             <img src="/images/trash-icon.svg" alt="Trash Icon" width="16" height="16">
                         </button>
+                        <div class="form-check form-switch ms-auto"> <!-- 변경된 부분 -->
+                            <input type="checkbox" class="form-check-input" id="todo_${todo.id}" ${todo.status ? 'checked' : ''} onchange="toggleCompletion('${todo.id}', this.checked)">
+                            <label class="form-check-label" for="todo_${todo.id}"></label>
+                        </div>
                     `;
                         todosContainer.appendChild(todoElement);
                     });
+                });
+        }
+
+        function toggleCompletion(id, checked) {
+            fetch(`/api/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id: id, status: checked})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert("Todo status updated successfully!");
+                    loadTodos(); // 화면 갱신
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
                 });
         }
 
