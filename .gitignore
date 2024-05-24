@@ -37,4 +37,4 @@ build
 
 ### VS Code ###
 .vscode/
-/src/main/resources/static/css/style.css
+# /src/main/resources/static/css/style.css
