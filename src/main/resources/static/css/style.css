@@ -33,3 +33,8 @@ form {
     border-radius: 50%;
     margin-right: 10px;
 }
+
+.completed {
+    text-decoration: line-through; /* 가운데 줄 추가 */
+    opacity: 0.5; /* 텍스트 흐리게 만듦 */
+}
