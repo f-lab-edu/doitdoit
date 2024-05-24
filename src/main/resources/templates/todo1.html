@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Todo Home</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <div class="header-container">
+        <div class="main-header">Todo Todo</div>
+        <div class="sub-header">Hit you with that</div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th class="completed-column">Completed</th>
+            <th>NO</th>
+            <th>Title</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="todo : ${todos}">
+            <td class="d-flex align-items-center custom-checkbox-cell">
+                <input class="form-check-input custom-checkbox" type="checkbox" th:checked="${todo.completed}" />
+            </td>
+            <td th:text="${todo.id}"></td>
+            <td>
+                <span th:if="${!#bools.isTrue(todo.isEditing)}" th:text="${todo.title}"></span>
+                <span th:if="${#bools.isTrue(todo.isEditing)}">
+                    <form th:action="@{/todo/{id}(id=${todo.id})}" th:method="post" class="d-inline">
+                        <input type="hidden" name="_method" value="put" />
+                        <input type="text" name="title" th:value="${todo.title}" class="form-control d-inline title-input" placeholder="Title"/>
+                        <input type="date" name="dueDate" th:value="${todo.dueDate}" class="form-control d-inline" />
+                        <button type="submit" class="btn-no-style d-inline">
+                            <img th:src="@{/images/modify-icon.svg}" alt="Update"/>
+                        </button>
+                    </form>
+                </span>
+            </td>
+            <td th:text="${todo.dueDate}"></td>
+            <td></td>
+            <td class="text-right">
+                <form th:action="@{/todo/{id}/edit(id=${todo.id})}" th:method="post" th:if="${!#bools.isTrue(todo.isEditing)}" class="d-inline">
+                    <button type="submit" class="btn-no-style d-inline">
+                        <img th:src="@{/images/modify-icon.svg}" alt="Edit"/>
+                    </button>
+                </form>
+                <form th:action="@{/todo/{id}(id=${todo.id})}" th:method="post" class="d-inline">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn-no-style d-inline">
+                        <img th:src="@{/images/trash-icon.svg}" alt="Delete"/>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="add-todo-container">
+    <form th:action="@{/todo}" th:method="post" class="form-inline">
+        <div class="form-group mr-2">
+            <input type="text" name="title" class="form-control" placeholder="Title" />
+        </div>
+        <div class="form-group mr-2">
+            <input type="date" name="dueDate" class="form-control" placeholder="Due Date" />
+        </div>
+        <button type="submit" class="btn btn-success">Add</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('addTodoForm');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const data = {};
+                formData.forEach((value, key) => { data[key] = value; });
+                console.log(data);
+            });
+        }
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
