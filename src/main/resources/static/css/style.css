@@ -38,3 +38,14 @@ form {
     text-decoration: line-through; /* 가운데 줄 추가 */
     opacity: 0.5; /* 텍스트 흐리게 만듦 */
 }
+
+.form-check-input:checked + .form-check-label::before {
+    background-color: #ccc;
+}
+
+.form-check-input:not(:checked) + .form-check-label::before {
+    background-color: #007bff;
+}
+
+
+
