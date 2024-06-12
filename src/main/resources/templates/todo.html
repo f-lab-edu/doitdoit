@@ -28,10 +28,10 @@
                 .then(data => {
                     console.log('Success:', data);
                     alert("Todo added successfully!");
-                    document.getElementById("item").value = ''; // 입력칸 비우기
+                    document.getElementById("item").value = '';
                     document.getElementById("dueDate").value = '';
                     document.getElementById("status").checked = false;
-                    loadTodos(); // 화면 갱신
+                    loadTodos();
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -43,45 +43,46 @@
                 .then(response => response.json())
                 .then(data => {
                     const todosContainer = document.getElementById('todosContainer');
-                    todosContainer.innerHTML = ''; // 기존 항목들 지우기
+                    todosContainer.innerHTML = '';
                     data.forEach(todo => {
                         const todoElement = document.createElement('div');
-                        todoElement.classList.add('todo-item', 'd-flex', 'align-items-center', 'mb-2');
+                        todoElement.classList.add('todo-item');
                         if (todo.status) {
-                            todoElement.classList.add('completed'); // 완료된 항목에 클래스 추가
+                            todoElement.classList.add('completed');
                         }
-                        todoElement.innerHTML = `
-                        <span class="todo-dot"></span>
-                        <div class="${todo.status ? 'completed' : ''}">${todo.item} - ${new Date(todo.dueDate).toLocaleDateString()}</div>
 
-                        <button class="btn-icon mx-2" onclick="modifyTodo('${todo.id}', '${todo.item}', '${todo.dueDate}', '${todo.status}')">
-                            <img src="/images/modify-icon.svg" alt="Modify Icon" width="16" height="16">
-                        </button>
-                        <button class="btn-icon" onclick="deleteTodo('${todo.id}')">
-                            <img src="/images/trash-icon.svg" alt="Trash Icon" width="16" height="16">
-                        </button>
-                        <div class="form-check form-switch ms-auto"> <!-- 변경된 부분 -->
-                            <input type="checkbox" class="form-check-input" id="todo_${todo.id}" ${todo.status ? 'checked' : ''} onchange="toggleCompletion('${todo.id}', this.checked)">
-                            <label class="form-check-label" for="todo_${todo.id}"></label>
-                        </div>
-                    `;
+                        todoElement.innerHTML = `
+                            <input type="checkbox" class="todo-checkbox" id="todo_${todo.id}" ${todo.status ? 'checked' : ''}>
+                            <span class="todo-text">${todo.item} - ${new Date(todo.dueDate).toLocaleDateString()}</span>
+                            <button class="btn-icon mx-2" onclick="modifyTodo('${todo.id}', '${todo.item}', '${todo.dueDate}', ${todo.status})">
+                                <img src="/images/modify-icon.svg" alt="Modify Icon" width="16" height="16">
+                            </button>
+                            <button class="btn-icon" onclick="deleteTodo('${todo.id}')">
+                                <img src="/images/trash-icon.svg" alt="Trash Icon" width="16" height="16">
+                            </button>
+                        `;
+
+                        const checkbox = todoElement.querySelector('.todo-checkbox');
+                        checkbox.addEventListener('change', function() {
+                            updateTodoStatus(todo.id, this.checked, todo.item, todo.dueDate);
+                        });
+
                         todosContainer.appendChild(todoElement);
                     });
                 });
         }
 
-        function toggleCompletion(id, checked) {
+        function updateTodoStatus(id, status, item, dueDate) {
             fetch(`/api/todos/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({id: id, status: checked})
+                body: JSON.stringify({ item: item, dueDate: dueDate, status: status })
             })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
-                    alert("Todo status updated successfully!");
                     loadTodos(); // 화면 갱신
                 })
                 .catch((error) => {
@@ -89,21 +90,23 @@
                 });
         }
 
-        function modifyTodo(id, item, dueDate, status) {
+        function modifyTodo(id, item, dueDate) {
             const newItem = prompt("Enter new item:", item);
-            if (newItem !== null && newItem !== "") {
+            const newDueDate = prompt("Enter new due date (YYYY-MM-DD):", dueDate);
+
+            if (newItem !== null && newItem !== "" && newDueDate !== null && newDueDate !== "") {
                 fetch(`/api/todos/${id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ id: id, item: newItem, dueDate: dueDate, status: status })
+                    body: JSON.stringify({ id: id, item: newItem, dueDate: newDueDate })
                 })
                     .then(response => response.json())
                     .then(data => {
                         console.log('Success:', data);
                         alert("Todo updated successfully!");
-                        loadTodos(); // 화면 갱신
+                        loadTodos();
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -112,12 +115,26 @@
         }
 
         function deleteTodo(id) {
-            // 여기에 삭제 기능 구현
-            alert('Delete Todo: ' + id);
+            if (confirm("Are you sure you want to delete this todo?")) {
+                fetch(`/api/todos/${id}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Todo deleted successfully!");
+                            loadTodos();
+                        } else {
+                            alert("Failed to delete todo!");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            loadTodos(); // 페이지 로드 시 할일 목록 불러오기
+            loadTodos();
         });
     </script>
 </head>

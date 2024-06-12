@@ -20,32 +20,40 @@ form {
 }
 
 .todo-item {
+    display: flex;
+    align-items: center;
     background-color: #ffffff;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
 }
 
-.todo-dot {
-    width: 10px;
-    height: 10px;
-    background-color: #007bff;
-    border-radius: 50%;
-    margin-right: 10px;
-}
+/*.todo-dot {*/
+/*    width: 10px;*/
+/*    height: 10px;*/
+/*    background-color: #007bff;*/
+/*    border-radius: 50%;*/
+/*    margin-right: 10px;*/
+/*}*/
 
 .completed {
     text-decoration: line-through; /* 가운데 줄 추가 */
     opacity: 0.5; /* 텍스트 흐리게 만듦 */
 }
 
-.form-check-input:checked + .form-check-label::before {
-    background-color: #ccc;
+.todo-checkbox {
+    margin-right: 10px;
 }
 
-.form-check-input:not(:checked) + .form-check-label::before {
-    background-color: #007bff;
-}
+
+/*.form-check-input:checked + .form-check-label::before {*/
+/*    background-color: #ccc;*/
+/*}*/
+
+/*.form-check-input:not(:checked) + .form-check-label::before {*/
+/*    background-color: #007bff;*/
+/*}*/
 
 
 
