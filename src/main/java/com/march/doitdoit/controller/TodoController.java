@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -22,19 +23,19 @@ public class TodoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Todo> getTodoById(@PathVariable Long id) {
-        Optional<Todo> todo = todoService.getTodoById(id);
+    public ResponseEntity<Todo> get(@PathVariable Long id) {
+        Optional<Todo> todo = todoService.get(id);
         return todo.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo) {
+    public Todo create(@RequestBody Todo todo) {
         return todoService.saveTodo(todo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo todoDetails) {
-        Optional<Todo> todoOptional = todoService.getTodoById(id);
+    public ResponseEntity<Todo> update(@PathVariable Long id, @RequestBody Todo todoDetails) {
+        Optional<Todo> todoOptional = todoService.get(id);
 
         if (!todoOptional.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -49,14 +50,17 @@ public class TodoController {
         return ResponseEntity.ok(updatedTodo);
     }
 
-    // 주석처리된 delete 메소드
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteTodoById(@PathVariable Long id) {
-//        if (!todoService.getTodoById(id).isPresent()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        todoService.deleteTodoById(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    // delete 메소드
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        try {
+            todoService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
 }
