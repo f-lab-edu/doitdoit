@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class TodoViewController {
 
-    @GetMapping("/todos")
+    @GetMapping("/todo")
     public String showTodoPage() {
         return "todo";
     }
